@@ -1,0 +1,96 @@
+<!-- need to be revised -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>3d_bundle_get_json</title>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <!-- <script src="https://unpkg.com/d3-3d/build/d3-3d.js"></script> -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+    {
+        "imports": {
+        "three": "https://unpkg.com/three@0.132.1/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.132.1/examples/jsm/"
+        }
+    }</script>
+
+    <script type="text/javascript" src="/3d_bundle+get_bundle_array/3d-force_edge_bundle.js"></script>
+</head>
+
+<body>
+    <div id="svg">
+    </div>
+    <script>
+        $(function () {  
+            d3.xml("/3d_bundle+get_bundle_array/testFDEB_xml.xml", function (xml) {
+
+                var raw_edges = xml.documentElement.getElementsByTagName("edge");
+                
+                var raw_nodes = xml.documentElement.getElementsByTagName("node");
+
+                var eedges = [];
+                var nnodes = {};
+                var min_x = Number.MAX_VALUE;
+                var max_x = 0;
+                var min_y = Number.MAX_VALUE;
+                var max_y = 0;
+                var min_z = Number.MAX_VALUE;
+                var max_z = 0;
+
+                for (var i = 0; i < raw_nodes.length; i++) {
+                    console.log("raw_nodes[i]",raw_nodes[i])
+
+                    var key = raw_nodes[i].getAttribute('id');
+                    console.log("key:(raw_nodes[i].getAttribute('id'))",key)
+                    var x = parseFloat(raw_nodes[i].childNodes[0].firstChild.nodeValue);
+                    var y = parseFloat(raw_nodes[i].childNodes[1].firstChild.nodeValue);
+                    var z = parseFloat(raw_nodes[i].childNodes[2].firstChild.nodeValue);
+
+                    nnodes[key] = {
+                        'x': x,
+                        'y': y,
+                        'z': z
+                    };
+                    min_x = Math.min(min_x, x);
+                    max_x = Math.max(max_x, x);
+                    min_y = Math.min(min_y, y);
+                    max_y = Math.max(max_y, y);
+                    min_z = Math.min(min_z, z);
+                    max_z = Math.max(max_z, z);
+                }
+
+                for (var i = 0; i < raw_edges.length; i++) {
+                    eedges.push({
+                        'source': raw_edges[i].getAttribute('source'),
+                        'target': raw_edges[i].getAttribute('target')
+                    });
+                }
+
+
+                //Run the FDEB algorithm using default values on the data
+                var fbundling = d3.ForceEdgeBundling().nodes(nnodes).edges(eedges);
+                var results = fbundling();
+
+                const jsonString = JSON.stringify(results);
+                const fileBlob = new Blob([jsonString], { type: 'application/json' });
+                const fileUrl = URL.createObjectURL(fileBlob);
+
+                const downloadLink = document.createElement('a');
+                downloadLink.href = fileUrl;
+                downloadLink.download = 'test.json';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                
+            });
+        })
+    </script>
+</body>
+
+</html>
