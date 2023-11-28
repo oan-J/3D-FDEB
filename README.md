@@ -18,6 +18,15 @@ This is a simple upgrade of force-directed edge bundling from 2D to 3D.
    - Execute `go live 3d-index.html` to generate a JSON output. This output can be employed for immersive 3D visualization.
 
 
+
+## Recommendation
+Consider leveraging Three.js for visualizing your results and exploring the bundled edges. An example of the visualization outcome is here.
+
+
+<img src="https://github.com/oan-J/3D-FDEB/blob/main/example.png" alt="3D Force Edge Bundle Example" width="300">
+
+
+
 ## Acknowledgments
 
 - The 3D-FDEB  is based on the work by [upphiminn](https://github.com/upphiminn) in the [d3.ForceBundle](https://github.com/upphiminn/d3.ForceBundle) repository.
